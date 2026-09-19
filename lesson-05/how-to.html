@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>勇者地牢怎么玩 · 第5课</title>
+<style>
+  body { margin: 0; background: #f4efe6; color: #1a2433; font-family: "Noto Serif SC", "Songti SC", serif; }
+  main { max-width: 720px; margin: 0 auto; padding: 32px 20px 64px; }
+  .kicker { font-size: 12px; letter-spacing: .16em; color: #5c6470; font-family: sans-serif; }
+  h1 { font-size: 32px; margin: 8px 0 12px; }
+  h2 { font-size: 18px; margin: 28px 0 10px; }
+  p, li { line-height: 1.7; font-size: 15px; }
+  .banner { background: #16263d; color: #f4efe6; padding: 12px 16px; font-family: sans-serif; font-size: 14px; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 16px; }
+  th, td { border: 1px solid #ddd4c4; padding: 8px 10px; text-align: left; font-size: 14px; }
+  th { background: #ede6d8; width: 28%; }
+  .callout { border-left: 3px solid #e8624d; padding: 8px 12px; background: #f8f1e6; margin: 16px 0; }
+  a { color: #16263d; }
+</style>
+</head>
+<body>
+<main>
+  <p class="kicker">HERODUNGEON · 算法设计及应用 · 第 5 课</p>
+  <h1>勇者地牢怎么玩</h1>
+  <p>这不是赶时间的动作游戏。你点一下，战场才结算一下。</p>
+  <div class="banner">第 5 课入口：<a style="color:#f4efe6" href="./">https://haroldss.github.io/lesson-05/</a><br>第 1 课迷宫仍在：<a style="color:#f4efe6" href="../">https://haroldss.github.io/</a></div>
+  <h2>1. 你要做什么</h2>
+  <p>第一关让事件按到达顺序出队；第二关把喝错的药从栈顶撤回去。</p>
+  <h2>2. 画面上谁是谁</h2>
+  <table>
+    <tr><th>你看到的</th><th>是什么</th></tr>
+    <tr><td>蓝衣服小人</td><td>你，叫 Ada</td></tr>
+    <tr><td>绿色小怪</td><td>哥布林</td></tr>
+    <tr><td>一排从左到右的牌</td><td>事件队列。最左边是队首</td></tr>
+    <tr><td>叠起来的牌</td><td>撤销栈。最上面是栈顶</td></tr>
+    <tr><td>HP 条</td><td>世界状态。栈不存血量</td></tr>
+  </table>
+  <h2>3. 第一关 · FIFO</h2>
+  <ol>
+    <li>三件事从右边进队：格挡 → 哥布林重击 → 反击一剑。</li>
+    <li>只点最左边亮着的牌，或点「处理队首」。</li>
+    <li>格挡先出队，重击才会打在盾上。</li>
+  </ol>
+  <div class="callout">从队尾乱挖：你会先空挥，再被打穿。</div>
+  <h2>4. 第二关 · LIFO</h2>
+  <ol>
+    <li>做三件事：挥剑、喝药、翻图。</li>
+    <li>药要留给 Boss。撤销（或按 Z）只弹栈顶。</li>
+    <li>弹出「喝药」时，血条从 70 回到 50。扣血的是世界，不是栈。</li>
+  </ol>
+  <p>一句话记住：只出队首打完第一关 → 从栈顶把喝药撤掉 → 血量在世界，票在栈里。</p>
+  <p><a href="./">开始第 5 课</a> · <a href="../">回第 1 课迷宫</a></p>
+</main>
+</body>
+</html>
