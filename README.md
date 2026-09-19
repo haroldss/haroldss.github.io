@@ -8,5 +8,6 @@
 - 第 5 课玩法说明：https://haroldss.github.io/lesson-05/how-to.html
 - 第 6 课 滑动窗口：https://haroldss.github.io/lesson-06/
 - 第 6 课玩法说明：https://haroldss.github.io/lesson-06/how-to.html
+- 第 7 课课件 PPT：https://haroldss.github.io/slides/lesson-07.html
 
 不需要安装 Python，手机和电脑浏览器都可以。
