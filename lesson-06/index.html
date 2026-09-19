@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>勇者地牢 · 第6课 · 滑窗</title>
+<style>
+:root{--bg:#0e1624;--elev:#16263d;--surface:#1c2d48;--cream:#f4efe6;--dim:#c9c2b4;--coral:#e8624d;--ink:#0e1624;--border:rgba(244,239,230,.14)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--cream);font-family:"IBM Plex Sans","Noto Sans SC",system-ui,sans-serif}
+button:not(:disabled){cursor:pointer}.wrap{max-width:960px;margin:0 auto;padding:24px 16px 48px}
+.kicker{font-size:11px;letter-spacing:.2em;color:var(--dim)}h1,h2{font-family:"Noto Serif SC",serif;font-weight:600;margin:8px 0 0}h1{font-size:clamp(28px,5vw,44px);line-height:1.15}h2{font-size:26px}
+.muted{color:var(--dim);line-height:1.65}.grid2{display:grid;gap:12px;margin:24px 0}@media(min-width:640px){.grid2{grid-template-columns:1fr 1fr}}
+.card{border:1px solid var(--border);background:rgba(22,38,61,.86);border-radius:20px;padding:16px}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:16px}
+.btn{height:44px;border-radius:999px;border:0;padding:0 20px;font-size:14px;font-weight:500}
+.btn-p{background:var(--cream);color:var(--ink)}.btn-g{background:transparent;color:var(--cream);border:1px solid var(--border)}.btn-x{background:transparent;color:var(--coral);border:1px solid rgba(232,98,77,.4)}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}
+.stat{border:1px solid var(--border);border-radius:16px;padding:8px 10px;font-size:12px;color:var(--dim)}.stat b{display:block;color:var(--cream);font-family:"Noto Serif SC",serif;font-size:20px;font-weight:600}
+.corridor{display:flex;gap:8px;overflow-x:auto;padding:4px 0}
+.cell{min-width:56px;flex:1;height:88px;border-radius:16px;border:1px solid var(--border);background:var(--surface);color:var(--dim);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+.cell.in{background:var(--cream);color:var(--ink);border-color:var(--cream)}
+.cell small{font-size:10px;opacity:.7}.cell b{font-family:"Noto Serif SC",serif;font-size:22px}
+.tag{position:absolute;top:-8px;font-size:11px}
+.flash{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);width:min(36rem,calc(100% - 2rem));background:rgba(22,38,61,.96);border:1px solid var(--border);border-radius:20px;padding:12px 16px;text-align:center;font-size:14px;pointer-events:none}
+a{color:var(--dim)}.shake{animation:shake .36s}@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+</style></head><body><div class="wrap" id="app"></div>
+<script>
+const LOG=[4,11,3,9,21,2,7,15,6,8],K=3,TIE=[5,1,5,1,5,1],TK=2;
+const winAt=(log,k,s)=>{const v=log.slice(s,s+k);return {start:s,values:v,sum:v.reduce((a,b)=>a+b,0)}};
+const nWin=(n,k)=>n-k+1;
+const BEST=(()=>{let bs=0,b=winAt(LOG,K,0).sum;for(let i=1;i<nWin(LOG.length,K);i++){const s=winAt(LOG,K,i).sum;if(s>b){b=s;bs=i}}return {start:bs,sum:b}})();
+const S={screen:"boot",start:0,sum:0,bestS:0,bestSum:0,ops:16,slides:0,leave:null,enter:null,flash:"",shake:false};
+function say(t){S.flash=t;render();clearTimeout(say._t);say._t=setTimeout(()=>{S.flash="";render()},2200)}
+function corridor(log,k,start){return `<div class="corridor">${log.map((v,i)=>{const inn=i>=start&&i<start+k;const lv=S.leave===i,en=S.enter===i;return `<div class="cell ${inn?"in":""}">${lv?`<span class="tag" style="color:var(--coral)">−${v}</span>`:""}${en?`<span class="tag" style="color:var(--cream)">+${v}</span>`:""}<small>格 ${i}</small><b>${v}</b></div>`}).join("")}</div>`}
+function boot(){return `<p class="kicker">HERODUNGEON · 第 6 次课</p><h1>走廊必须连续走<br>滑动只改两端</h1><p class="muted" style="max-width:36rem;margin-top:16px">伤害一格一格记下来。找出连续 k 格最疼的一段。平局时，先发生的先写进战报。</p><div class="grid2"><div class="card"><b>第一关 · 必须连续</b><p class="muted">不能挑最高的三格拼起来。</p></div><div class="card"><b>第二关 · 增量滑动</b><p class="muted">离开减，进入加。重叠的格子已经付过钱。</p></div></div><div class="row"><button class="btn btn-p" data-act="s1">开始试玩</button><a href="how-to.html">玩法说明 · 第6课</a><a href="../">返回第1课迷宫</a></div>`}
+function fail(title,body,retry){return `<p class="kicker" style="color:var(--coral)">FAILED</p><h2>${title}</h2><p class="muted">${body}</p><div class="row"><button class="btn btn-p" data-act="${retry}">再来一次</button></div>`}
+function win(k,t,b,n,r){return `<p class="kicker">${k}</p><h2>${t}</h2><p class="muted">${b}</p><div class="row"><button class="btn btn-p" data-act="${n}">下一关</button><button class="btn btn-g" data-act="${r}">重打</button></div>`}
+function stage1(){const w=winAt(LOG,K,S.start);return `<p class="kicker">第一关 · 窗口必须连续</p><h2>找出连续 3 格最疼的一段</h2><p class="muted">左右滑动这扇窗。不能把 21、15、11 拼起来。</p><section class="card" style="margin-top:16px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--dim)"><span>DAMAGE LOG · k = 3</span><span>当前和 ${w.sum} · 起点 ${w.start}</span></div>${corridor(LOG,K,S.start)}<div class="row"><button class="btn btn-g" data-act="l">左滑</button><button class="btn btn-g" data-act="r">右滑</button><button class="btn btn-p" data-act="lock">锁定这一段</button><button class="btn btn-x" data-act="cherry">反例：挑 21 · 15 · 11</button></div></section>`}
+function stage2(){return `<p class="kicker">第二关 · 增量滑动</p><h2>离开减，进入加</h2><p class="muted">加法次数有限。滑一步只付两次算术。</p><div class="stats"><div class="stat">当前和<b>${S.sum}</b></div><div class="stat">最优<b>${S.bestSum}</b><span> 起点 ${S.bestS}</span></div><div class="stat">加法次数<b>${S.ops}</b></div></div><section class="card">${corridor(LOG,K,S.start)}<div class="row"><button class="btn btn-p" data-act="inc">滑一步 · −离开 +进入</button><button class="btn btn-x" data-act="brute">反例：重加算这一扇</button></div><p class="muted" style="margin-top:10px">已滑 ${S.slides} / ${nWin(LOG.length,K)-1} 步</p></section>`}
+function stage3(){const w=winAt(TIE,TK,S.start);return `<p class="kicker">第三关 · 平局留更早</p><h2>同样疼，先发生的先记下</h2><p class="muted">每一扇窗都是 6。只有严格更大才换最优。</p><section class="card" style="margin-top:16px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--dim)"><span>k = 2 · 当前和 ${w.sum}</span><span>最优起点 ${S.bestS}</span></div>${corridor(TIE,TK,S.start)}<div class="row"><button class="btn btn-p" data-act="tslide">${S.start>=nWin(TIE.length,TK)-1?"确认战报":"滑一步"}</button><button class="btn btn-x" data-act="tiebad">反例：这一扇也是 6，换成它</button></div></section>`}
+function clear(){return `<p class="kicker">ESCAPED · 第 6 课通关</p><h2>带走这三句话去写作业</h2><div class="card" style="margin-top:16px"><b>连续</b><p class="muted">窗口必须是相邻的 k 格。</p></div><div class="card" style="margin-top:10px"><b>增量</b><p class="muted">离开减、进入加。不要重加算。</p></div><div class="card" style="margin-top:10px"><b>平局</b><p class="muted">只有严格更大才换最优。同样疼，先发生的先写进战报。</p></div><p class="muted" style="margin-top:16px">仓库今晚只改 sliding_window.py。测试要看到 window_init、每一次 window_slide，以及 window_best。</p><div class="row"><button class="btn btn-p" data-act="boot">再玩一遍</button><a href="../">返回第1课迷宫</a></div>`}
+function view(){if(S.screen==="boot")return boot();if(S.screen==="s1")return stage1();if(S.screen==="s1f")return fail("那不是走廊上走过的一段","21、15、11 是三格最高的伤害，但它们不相邻。","s1");if(S.screen==="s1w")return win("CLEARED · 连续窗口","最疼的是 格 2–4","3 + 9 + 21 = 33。不能跳格挑 15。","s2go","s1");if(S.screen==="s2")return stage2();if(S.screen==="s2f")return fail("加法次数用完了","每一扇窗口都从头加一遍，重叠的格子被加了两次。","s2go");if(S.screen==="s2w")return win("CLEARED · 增量","离开减，进入加","窗从 0 滑到 1：减掉离开的 4，加上进入的 9。","s3go","s2go");if(S.screen==="s3")return stage3();if(S.screen==="s3f")return fail("同样疼，先发生的先写进战报","新窗口只有严格更大才换最优。相等时留下起点 0。","s3go");return clear()}
+function render(){const app=document.getElementById("app");app.className="wrap"+(S.shake?" shake":"");app.innerHTML=view()+(S.flash?`<div class="flash">${S.flash}</div>`:"")}
+function last(){return nWin(LOG.length,K)-1}
+function slide1(dir){const n=S.start+dir;if(n<0||n>last()){S.shake=true;say("窗口不能越界。长度始终是 3 格。");setTimeout(()=>{S.shake=false;render()},360);return}S.start=n;render()}
+function lock(){if(S.start===BEST.start)S.screen="s1w";else{S.shake=true;say("还不是最疼的一段。继续滑。");setTimeout(()=>{S.shake=false;render()},360);return}render()}
+function s2go(){S.screen="s2";S.start=0;S.sum=winAt(LOG,K,0).sum;S.bestS=0;S.bestSum=S.sum;S.ops=16;S.slides=0;S.leave=null;S.enter=null;render()}
+function inc(){if(S.start>=last()){if(S.bestS===BEST.start)S.screen="s2w";else say("已经到尽头。最优应该是起点 2、和 33。");render();return}if(S.ops<2){S.screen="s2f";render();return}const leave=LOG[S.start],enter=LOG[S.start+K],ns=S.start+1,nsum=S.sum-leave+enter;S.leave=S.start;S.enter=S.start+K;S.sum=nsum;S.start=ns;S.ops-=2;S.slides+=1;if(nsum>S.bestSum){S.bestS=ns;S.bestSum=nsum;say(`滑一步：−${leave} +${enter} = ${nsum}。严格更大，记下起点 ${ns}。`)}else say(`滑一步：−${leave} +${enter} = ${nsum}。没有更疼，最优仍是起点 ${S.bestS}。`);if(S.start===last()&&S.bestS===BEST.start)S.screen="s2w";render();setTimeout(()=>{S.leave=null;S.enter=null;render()},700)}
+function brute(){if(S.start>=last()){say("已经到尽头。");return}if(S.ops<K){S.screen="s2f";render();return}const ns=S.start+1,w=winAt(LOG,K,ns);S.ops-=K;S.start=ns;S.sum=w.sum;S.slides+=1;S.shake=true;say(`重加算：把 ${w.values.join("+")} 又加了一遍。`);if(w.sum>S.bestSum){S.bestS=w.start;S.bestSum=w.sum}if(S.ops<=0&&ns<last())S.screen="s2f";render();setTimeout(()=>{S.shake=false;render()},360)}
+function s3go(){S.screen="s3";S.start=0;S.bestS=0;S.leave=null;S.enter=null;render()}
+function tslide(){const lastT=nWin(TIE.length,TK)-1;if(S.start>=lastT){S.screen=S.bestS===0?"clear":"s3f";render();return}const ns=S.start+1,snap=winAt(TIE,TK,ns);if(snap.sum>winAt(TIE,TK,S.bestS).sum){S.bestS=ns;say(`和 ${snap.sum} 严格更大，换成起点 ${ns}。`)}else say(`和仍是 ${snap.sum}。相等不换，最优仍是更早的起点 ${S.bestS}。`);S.start=ns;render()}
+document.getElementById("app").addEventListener("click",e=>{const t=e.target.closest("[data-act]");if(!t)return;const a=t.dataset.act;if(a==="boot"){S.screen="boot";render();return}if(a==="s1"){S.screen="s1";S.start=0;render();return}if(a==="l")return slide1(-1);if(a==="r")return slide1(1);if(a==="lock")return lock();if(a==="cherry"){S.screen="s1f";render();return}if(a==="s2go")return s2go();if(a==="inc")return inc();if(a==="brute")return brute();if(a==="s3go")return s3go();if(a==="tslide")return tslide();if(a==="tiebad"){S.screen="s3f";render();return}});
+window.addEventListener("keydown",e=>{if(S.screen!=="s1")return;if(e.key==="ArrowLeft"||e.key==="a"||e.key==="A"){e.preventDefault();slide1(-1)}if(e.key==="ArrowRight"||e.key==="d"||e.key==="D"){e.preventDefault();slide1(1)}});
+render();
+</script></body></html>
